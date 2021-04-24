@@ -1,0 +1,24 @@
+FROM python:3.7.4-slim-buster
+
+# Install build dependencies.
+RUN apt-get update \
+ && apt-get install --no-install-recommends --assume-yes build-essential \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
+# Change workdir.
+WORKDIR ./app
+
+# Install dependencies.
+COPY requirements.txt ./requirements.txt
+RUN pip install --upgrade pip --no-cache-dir \
+ && pip install -r ./requirements.txt --no-cache-dir
+
+# Copy API files.
+COPY VERSION ./VERSION
+COPY api api
+COPY logging.conf ./logging.conf
+COPY run_api.py ./run_api.py
+COPY run_api.sh ./run_api.sh
+
+CMD [ "./run_api.sh" ]
